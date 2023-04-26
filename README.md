@@ -1,6 +1,6 @@
-# Django REST + Gunicorn + SSL + Token based authentication 
+# Django REST API + Gunicorn + Docker + SSL + Token based authentication
 
-## Requirements
+##  Requirements
 
 The file *click_log.csv* contains one hour of data for the following fields: id, timestamp (unix timestamp), type, campaign, banner, content_unit, network, browser, operating_system, country, state, city
 
@@ -65,6 +65,8 @@ use some secret management service. They would never be passed around in plain t
 
 ### Endpoints
 
+Defined in [urls.py](src%2Fcore%2Furls.py) and [urls.py](src%2Fclicks%2Furls.py)
+
 - **/admin/** - Django Admin Site
 - **/api/clicks/campaign/:id/** - Campaign (with provided id) clicks
 - **/api/browser/** - REST Browser 
@@ -74,7 +76,21 @@ use some secret management service. They would never be passed around in plain t
 
 ## REST API
 
-- **/api/clicks/campaign/:id[int]/?after_date=:after_date[str]&before_date=:before_date[str]**
+### Login
+
+- **POST /api/auth/login**
+
+Required headers
+- Authorization: Basic username:password - 
+
+Credentials should be encoded using **base64**. Example in [tests.py](src%2Fclicks%2Ftests.py): 
+```python
+base64.b64encode(f'{USERNAME}:{PASSWORD}'.encode()).decode()
+```
+
+### Clicks
+
+- **GET /api/clicks/campaign/:id[int]/?after_date=:after_date[str]&before_date=:before_date[str]**
 
 Path Parameters
 - **id** - campaign ID
@@ -82,6 +98,9 @@ Path Parameters
 Query Parameters
 - **after_date** - After date string in the format "YYYY-MM-DD HH:MM:SS"
 - **before_date** - Before date string in the format "YYYY-MM-DD HH:MM:SS"
+
+Required headers
+- Authorization: Token token_value
 
 Example:
 ```
@@ -126,19 +145,19 @@ All the commands are defined in the [Makefile](Makefile).
 
 - **bootstrap** - Bootstraps Django. Includes: clean, migrate, create_superuser, import_data, collectstatic
 - **clean** - Deletes **db.sqlite3** and generated **src/static** folder.
-- **migrate** - Apply migration
-- **create_superuser** - Create Django super user (admin)
-- **import_data** - Import **data/click_log.csv** into **SQLite**
-- **collectstatic** - Generate static files to serve with Gunicorn and built in dev server
-- **run_tests** - Run tests
-- **run_dev_server** - Run development server on **http://127.0.0.1:8080**
-- **run_prod_server** - Run Gunicorn server on **https://127.0.0.1:443**
+- **migrate** - Applies migration
+- **create_superuser** - Creates Django super user (admin)
+- **import_data** - Imports **data/click_log.csv** into **SQLite**
+- **collectstatic** - Generates static files to serve with Gunicorn and built in dev server
+- **run_tests** - Runs tests
+- **run_dev_server** - Runs development server on **http://127.0.0.1:8080**
+- **run_prod_server** - Runs Gunicorn server on **https://127.0.0.1:443**
 
 
-- **docker_build** - Build **Docker** image
-- **docker_run_tests** - Run tests using generated **Docker** image
-- **docker_run_dev_server** - Run development server on **http://127.0.0.1:8080** inside **Docker** container
-- **docker_run_prod_server** - Run Gunicorn server on **https://127.0.0.1:443** inside **Docker** container
+- **docker_build** - Builds **Docker** image
+- **docker_run_tests** - Runs tests using generated **Docker** image
+- **docker_run_dev_server** - Runs development server on **http://127.0.0.1:8080** inside **Docker** container
+- **docker_run_prod_server** - Runs Gunicorn server on **https://127.0.0.1:443** inside **Docker** container
 
 All the commands are run from the root of the project in the form:
 ```bash
@@ -158,7 +177,7 @@ $ make docker_run_prod_server
 
 You can run the application from the command line with **manage.py**.
 
-Before running any command, first execute [Prerequisites](#prerequisites-for-cli-and-make).
+Before running any command first execute [Prerequisites](#prerequisites-for-cli-and-make).
 
 From the root of the project:
 
@@ -196,7 +215,7 @@ $ export DEBUG=False; export SECRET_KEY="${cat secrets/secret.key}"; cd src; \
 
 ### Docker
 
-It is also possible to run servers and tests using Docker:
+It is also possible to run servers and tests using Docker.
 
 Build the Docker image:
 ```bash
@@ -213,7 +232,7 @@ Run Gunicorn server on **https://127.0.0.1:443** inside **Docker** container:
 $ docker run -p 443:443 -e SECRET_KEY="${cat secrets/secret.key}" -e DEBUG=False --rm reljicd/clicks_api
 ```
 
-## Using REST API using Postman
+## Driving REST API using Postman
 
 ![Screenshot 2023-04-26 at 18.21.00.png](screenshots%2FScreenshot%202023-04-26%20at%2018.21.00.png)
 ![Screenshot 2023-04-26 at 18.21.26.png](screenshots%2FScreenshot%202023-04-26%20at%2018.21.26.png)
@@ -251,6 +270,8 @@ Go to the web browser and visit `http://127.0.0.1:8000/api/browser/` (dev)
 or `https://127.0.0.1/api/browser/` (prod)
 
 ### Tests
+
+Tests can be found in [tests.py](src%2Fclicks%2Ftests.py).
 
 Before running tests using CLI or Make first execute [Prerequisites](#prerequisites-for-cli-and-make).
 
