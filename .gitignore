@@ -160,3 +160,5 @@ venv.bak/
 *.iml
 
 *.sqlite3
+
+src/static
