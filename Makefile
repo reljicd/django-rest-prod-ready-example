@@ -17,10 +17,10 @@ run_prod_server:
 	${PYTHON} -m gunicorn core.wsgi \
 	-b :443 --keyfile ../secrets/key.pem --certfile ../secrets/cert.pem
 
-bootstrap: migrate create_superuser import_data collectstatic
+bootstrap: clean migrate create_superuser import_data collectstatic
 
 clean:
-	rm -rf src/static; rm db.sqlite3
+	rm -rf src/static || true; rm db.sqlite3 || true
 
 migrate:
 	${MANAGE} migrate
