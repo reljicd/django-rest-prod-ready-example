@@ -1,17 +1,5 @@
 # Django REST API + Gunicorn + Docker + SSL + Token based authentication
 
-##  Requirements
-
-The file *click_log.csv* contains one hour of data for the following fields: id, timestamp (unix timestamp), type, campaign, banner, content_unit, network, browser, operating_system, country, state, city
-
-1. Set up a SQL Server (MySQL or SQLite could be a good choice) with a table that holds the data of the file *click_log.csv*
-
-2. Write a service that accesses the data in your database and returns the following information: Given a campaign, the API returns the amount of clicks that were made on advertisements that belong to this campaign. One entry in the *click_log.csv* file represents one click. Eg.: for the campaign 4510461 the API should return 13.
-
-3. Extend the API with a time filter, so that it only returns the number of clicks that fall between a given start date and a given end date. Both dates should be passed as a string of the format „yyyy-mm-dd hh:mm:ss“. The timezone should always be UTC.
-
-Eg.: for the campaign 4510461, start date 2021-11-07 03:10:00 and end date 2021-11-07 03:30:00, the API should return 4.
-
 ## Solution
 
 ![Diagram.jpg](screenshots%2FDiagram.jpg)
